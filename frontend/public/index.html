@@ -30,7 +30,7 @@
                         <button type="submit" class="btn btn-primary">Sign Up</button>
                     </form>
 
-                    <!-- Sign In Form --
+                    <!-- Sign In Form -->
                     <form v-else @submit.prevent="submitForm('login', 'Sign In')">
                         <div class="form-group">
                             <label for="username">Email</label>
@@ -43,9 +43,9 @@
                         <button type="submit" class="btn btn-primary">Sign In</button>
                     </form>
 
-                    <!-- Toggle Sign Up / Sign In Form --
+                    <!-- Toggle Sign Up / Sign In Form -->
                     <button class="btn btn-secondary mt-3" @click="toggleForm">{{ isSignUp ? 'Switch to Sign In' : 'Switch to Sign Up' }}</button>
-                    -->
+
                 </div>
             </div>
         </div>
