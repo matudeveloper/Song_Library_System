@@ -1,0 +1,58 @@
+openapi: 3.0.2
+info:
+  title: Todo
+  version: 1.0.0
+paths:
+  /users:
+    summary: Path used to manage the list of users.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `User` entities.  This path contains a
+      `GET` and `POST` operation to perform the list and create tasks, respectively.
+    post:
+      requestBody:
+        description: A new `User` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      tags:
+        - /users
+      responses:
+        '201':
+          description: Successful response.
+        '400':
+          content:
+            text/html:
+              examples:
+                Email and password required:
+                  value: Email and password required
+          description: Bad Request
+        '409':
+          content:
+            text/html:
+              examples:
+                Email already exists:
+                  value: Email already exists
+          description: Conflict
+      operationId: createUser
+      summary: Create a User
+      description: Creates a new instance of a `User`.
+components:
+  schemas:
+    User:
+      title: Root Type for User
+      description: ''
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: a@a.com
+        password: secret
+tags:
+  -
+    name: /users
+    description: ''

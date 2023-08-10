@@ -1,0 +1,6 @@
+# Project exclude paths
+/node_modules/
+/.idea/
+
+# Keep environment variables out of version control
+.env
