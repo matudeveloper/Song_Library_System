@@ -27,7 +27,7 @@
                             <label for="password">Password</label>
                             <input type="password" class="form-control" v-model="password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                        <button type="submit" class="btn btn-primary" v-if="!sessionToken" >Sign Up</button>
                     </form>
 
                     <!-- Sign In Form -->
@@ -40,7 +40,7 @@
                             <label for="password">Password</label>
                             <input type="password" class="form-control" v-model="password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Sign In</button>
+                        <button type="submit" class="btn btn-primary" v-if="!sessionToken" >Sign In</button>
                     </form>
 
                     <!-- Toggle Sign Up / Sign In Form -->
@@ -62,33 +62,50 @@
     new Vue({
         el: '#app',
         data: {
-
             email: '',
             password: '',
             isSignUp: true,
+            sessionToken: localStorage.getItem('sessionToken') || '', // Default to token from storage if available.
+        },
+        created() { // Vue lifecycle hook
+            // Set axios default headers on instance creation if token is present
+            if (this.sessionToken) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${this.sessionToken}`;
+            }
         },
         methods: {
-
             async submitForm(endpoint, action) {
                 try {
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': this.sessionToken ? `Bearer ${this.sessionToken}` : undefined
+                    };
+
                     const response = await axios.post(`/${endpoint}`, {
                         email: this.email,
                         password: this.password,
+                    }, {
+                        headers: headers
                     });
-                    //console.log(this.password)
+                    console.log(response);
 
                     if (this.password.length < 8) {
-                        //return res.status(400).json({ error: 'Password must be at least 8 characters long' });
                         alert('Password must be at least 8 characters long');
-                    }
-                    else {
-                        if (response.data) {
-                            alert(`${action} successful: ${response.data.message}`);
+                    } else {
+                        if (response.data && response.data.sessionToken) {
+                            this.sessionToken = response.data.sessionToken;
+                            localStorage.setItem('sessionToken', this.sessionToken);
+                            axios.defaults.headers.common['Authorization'] = `Bearer ${this.sessionToken}`;
+
                             if (endpoint === 'login') {
-                                // Redirect to a dashboard or profile page after successful login
-                                //this.$router.push('/dashboard'); // Change to your desired route
-                                window.location.href = '/dashboard';
+                                const token = localStorage.getItem('sessionToken');
+                                if (token && window.location.pathname === '/') {
+                                    window.location.href = '/dashboard';
+                                } else if (!token) {
+                                    window.location.href = '/';
+                                }
                             }
+
                         } else if (response.data.error) {
                             if (response.data.error.includes('already exists')) {
                                 alert('User already exists. Please use a different email.');
@@ -99,37 +116,36 @@
                     }
 
                 } catch (error) {
-                    //console.error('Error:', error);
-                    //console.log(error.config.data.hasOwnProperty('password'));
-                    if ( error.config.data !== "undefined" ) {
-
-                        let jsonData = JSON.parse(error.config.data);
-
-                        let price = jsonData["password"];
-
-                        if (price.length < 8) {
-                            //return res.status(400).json({ error: 'Password must be at least 8 characters long' });
-                            alert('Password must be at least 8 characters long');
+                    if (error.response) {
+                        switch (error.response.status) {
+                            case 409:
+                                alert('User already exists. Please use a different email.');
+                                break;
+                            case 401:
+                                alert('Invalid credentials');
+                                break;
+                            default:
+                                alert('An error occurred.');
+                                break;
                         }
-                    }
-                    if (error.response && error.response.status === 409) {
-                        alert('User already exists. Please use a different email.');
-                    }
-                    if  (error.response && error.response.status === 401) {
-                        alert('Invalid credentials');
-                    }
-                    else {
-                        //alert('An error Accured');
-                        //console.log(error)
+                    } else {
+                        alert('An error occurred.');
+                        console.error(error);
                     }
                 }
             },
             toggleForm() {
                 this.isSignUp = !this.isSignUp;
             },
-
+            clearStorageAndToggleLoginButtons() {
+                this.sessionToken = '';
+                localStorage.removeItem('sessionToken');
+                delete axios.defaults.headers.common['Authorization']; // Clear axios default header
+            },
+            // ... (other methods, if any)
         },
     });
+
 </script>
 </body>
 </html>
