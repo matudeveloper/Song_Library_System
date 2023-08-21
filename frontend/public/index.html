@@ -62,89 +62,116 @@
     new Vue({
         el: '#app',
         data: {
+
             email: '',
             password: '',
             isSignUp: true,
-            sessionToken: localStorage.getItem('sessionToken') || '', // Default to token from storage if available.
-        },
-        created() { // Vue lifecycle hook
-            // Set axios default headers on instance creation if token is present
-            if (this.sessionToken) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${this.sessionToken}`;
-            }
+            sessionToken: '',
         },
         methods: {
-            async submitForm(endpoint, action) {
-                try {
-                    const headers = {
-                        'Content-Type': 'application/json',
-                        'Authorization': this.sessionToken ? `Bearer ${this.sessionToken}` : undefined
-                    };
 
-                    const response = await axios.post(`/${endpoint}`, {
+            async submitForm(endpoint, action) {
+
+                try {
+
+                    const response = await this.sendRequest(`/${endpoint}`, 'POST', {
                         email: this.email,
                         password: this.password,
-                    }, {
-                        headers: headers
+
                     });
-                    console.log(response);
+
 
                     if (this.password.length < 8) {
-                        alert('Password must be at least 8 characters long');
-                    } else {
-                        if (response.data && response.data.sessionToken) {
-                            this.sessionToken = response.data.sessionToken;
-                            localStorage.setItem('sessionToken', this.sessionToken);
-                            axios.defaults.headers.common['Authorization'] = `Bearer ${this.sessionToken}`;
+                          alert('Password must be at least 8 characters long');
+                    }
+                    // Inline function to check for a specific cookie
+                    function checkCookie(name) {
+                        let value = "; " + document.cookie;
+                        let parts = value.split("; " + name + "=");
+                        if (parts.length === 2) return parts.pop().split(";").shift();
+                        else return null;
+                    }
 
-                            if (endpoint === 'login') {
-                                const token = localStorage.getItem('sessionToken');
-                                if (token && window.location.pathname === '/') {
-                                    window.location.href = '/dashboard';
-                                } else if (!token) {
-                                    window.location.href = '/';
-                                }
-                            }
+                    let sessionToken = checkCookie('authToken');
 
-                        } else if (response.data.error) {
-                            if (response.data.error.includes('already exists')) {
-                                alert('User already exists. Please use a different email.');
-                            } else {
-                                alert(`${action} failed: ${response.data.error}`);
+
+                    if (sessionToken) {
+
+                        if (endpoint === 'login') {
+
+                            const token = localStorage.getItem('sessionToken');
+
+                            if (!sessionToken && window.location.pathname !== '/') {
+                                // No token and not on the login page; redirect to login
+                                window.location.href = '/';
+                            } else if (sessionToken && window.location.pathname === '/') {
+                                // Already has a token and is on the login page; redirect to dashboard
+                                window.location.href = '/dashboard';
                             }
                         }
+                    } else if (response.error) {
+                        if (response.error.includes('already exists')) {
+                            alert('User already exists. Please use a different email.');
+                        } else {
+                            alert(`${action} failed: ${response.data.error}`);
+                        }
                     }
+                    //}
 
                 } catch (error) {
-                    if (error.response) {
-                        switch (error.response.status) {
-                            case 409:
-                                alert('User already exists. Please use a different email.');
-                                break;
-                            case 401:
-                                alert('Invalid credentials');
-                                break;
-                            default:
-                                alert('An error occurred.');
-                                break;
+
+                    if ( error.config.data !== "undefined" ) {
+
+                        let jsonData = JSON.parse(error.config.data);
+
+                        let price = jsonData["password"];
+
+                        if (price.length < 8) {
+
+                            alert('Password must be at least 8 characters long');
                         }
-                    } else {
-                        alert('An error occurred.');
-                        console.error(error);
                     }
+                    if (error.response && error.response.status === 409) {
+                        alert('User already exists. Please use a different email.');
+                    }
+                    if  (error.response && error.response.status === 401) {
+                        alert('Invalid credentials');
+                    }
+
                 }
+            },
+            async sendRequest(url, method, data) {
+
+                const headers = {
+                    'Content-Type': 'application/json',
+
+                };
+
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: headers,
+                    body: JSON.stringify(data)
+                });
+
+
+                // Error handling
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                return await response.json();
             },
             toggleForm() {
                 this.isSignUp = !this.isSignUp;
             },
-            clearStorageAndToggleLoginButtons() {
-                this.sessionToken = '';
-                localStorage.removeItem('sessionToken');
-                delete axios.defaults.headers.common['Authorization']; // Clear axios default header
-            },
-            // ... (other methods, if any)
+
+
+
         },
+
     });
+
 
 </script>
 </body>
