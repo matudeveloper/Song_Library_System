@@ -4,7 +4,8 @@
   "description": "README.md",
   "main": "server.js",
   "scripts": {
-    "test": "run test"
+    "test": "cypress run",
+    "test:open": "cypress open"
   },
   "author": "martin laan",
   "license": "ISC",
@@ -26,5 +27,8 @@
     "swagger-ui-express": "^5.0.0",
     "vue": "^3.3.4",
     "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "cypress": "^12.17.4"
   }
 }

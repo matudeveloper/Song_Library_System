@@ -18,33 +18,33 @@
                 <div class="card-body">
 
                     <!-- Sign Up Form -->
-                    <form v-if="isSignUp" @submit.prevent="submitForm('users', 'Sign Up')">
+                    <form v-if="isSignUp" @submit.prevent="submitForm('users', 'Sign Up')" data-test-id="signup-form">
                         <div class="form-group">
                             <label for="username">Email</label>
-                            <input type="text" class="form-control" v-model="email" required>
+                            <input type="text" class="form-control" v-model="email" required data-test-id="signup-email">
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" v-model="password" required>
+                            <input type="password" class="form-control" v-model="password" required data-test-id="signup-password">
                         </div>
-                        <button type="submit" class="btn btn-primary" v-if="!sessionToken" >Sign Up</button>
+                        <button type="submit" class="btn btn-primary" v-if="!sessionToken" data-test-id="signup-button">Sign Up</button>
                     </form>
 
                     <!-- Sign In Form -->
-                    <form v-else @submit.prevent="submitForm('login', 'Sign In')">
+                    <form v-else @submit.prevent="submitForm('login', 'Sign In')" data-test-id="signin-form">
                         <div class="form-group">
                             <label for="username">Email</label>
-                            <input type="text" class="form-control" v-model="email" required>
+                            <input type="text" class="form-control" v-model="email" required data-test-id="signin-email">
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" v-model="password" required>
+                            <input type="password" class="form-control" v-model="password" required data-test-id="signin-password">
                         </div>
-                        <button type="submit" class="btn btn-primary" v-if="!sessionToken" >Sign In</button>
+                        <button type="submit" class="btn btn-primary" v-if="!sessionToken" data-test-id="signin-button">Sign In</button>
                     </form>
 
                     <!-- Toggle Sign Up / Sign In Form -->
-                    <button class="btn btn-secondary mt-3" @click="toggleForm">{{ isSignUp ? 'Switch to Sign In' : 'Switch to Sign Up' }}</button>
+                    <button class="btn btn-secondary mt-3" @click="toggleForm" data-test-id="toggle-button">{{ isSignUp ? 'Switch to Sign In' : 'Switch to Sign Up' }}</button>
 
                 </div>
             </div>

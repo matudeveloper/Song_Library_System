@@ -1,58 +1,169 @@
 openapi: 3.0.2
 info:
-  title: Todo
+  title: Todo API
   version: 1.0.0
+
 paths:
   /users:
-    summary: Path used to manage the list of users.
-    description: >-
-      The REST endpoint/path used to list and create zero or more `User` entities.  This path contains a
-      `GET` and `POST` operation to perform the list and create tasks, respectively.
     post:
+      summary: Create a User
+      tags:
+        - Users
       requestBody:
-        description: A new `User` to be created.
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        required: true
-      tags:
-        - /users
       responses:
         '201':
-          description: Successful response.
+          description: User successfully created.
         '400':
+          description: Bad Request.
           content:
-            text/html:
-              examples:
-                Email and password required:
-                  value: Email and password required
-          description: Bad Request
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
+          description: Conflict.
           content:
-            text/html:
-              examples:
-                Email already exists:
-                  value: Email already exists
-          description: Conflict
-      operationId: createUser
-      summary: Create a User
-      description: Creates a new instance of a `User`.
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /login:
+    post:
+      summary: Create a Session
+      tags:
+        - Sessions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Session successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Destroy a Session
+      tags:
+        - Sessions
+      responses:
+        '204':
+          description: Session successfully destroyed.
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /items:
+    get:
+      summary: Get user's items
+      tags:
+        - Items
+      responses:
+        '200':
+          description: Successful retrieval of items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     User:
-      title: Root Type for User
-      description: ''
+      title: User
+      description: A user entity.
       type: object
       properties:
         email:
           type: string
+          format: email
         password:
           type: string
+          format: password
+      required:
+        - email
+        - password
       example:
         email: a@a.com
-        password: secret
+        password: 12345678
+
+    Session:
+      title: Session
+      description: User session data.
+      type: object
+      properties:
+        sessionToken:
+          type: string
+      required:
+        - sessionToken
+      example:
+        sessionToken: 2b3c3338-7fd4-4434-8f3d-cb4fbdeba0e0
+
+    Item:
+      title: Item
+      description: User's item.
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        userId:
+          type: integer
+      required:
+        - id
+        - description
+        - userId
+
+    ErrorResponse:
+      title: ErrorResponse
+      description: API error response.
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - BearerAuth: []
+
 tags:
-  -
-    name: /users
-    description: ''
+  - name: Users
+    description: User management endpoints.
+  - name: Sessions
+    description: Session management endpoints.
+  - name: Items
+    description: Item management endpoints.
