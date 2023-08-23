@@ -128,6 +128,53 @@ app.post('/logout', (req, res) => {
     res.json({ message: 'Logged out' });
 });
 
+// Mock in-memory data store
+let items = [
+    { id: 1, description: 'Sample Item 1', userId: 10 },
+    { id: 2, description: 'Sample Item 2', userId: 20 }
+];
+
+// Get items endpoint
+app.get('/items', (req, res) => {
+    res.json(items);
+});
+
+// Create an item endpoint
+app.post('/items', (req, res) => {
+    const item = req.body;
+    item.id = items.length + 1; // simple id assignment
+    items.push(item);
+    res.status(201).json(item);
+});
+
+// Update an item endpoint
+app.put('/items/:id', (req, res) => {
+    const itemId = parseInt(req.params.id);
+    const updatedItem = req.body;
+
+    const itemIndex = items.findIndex(item => item.id === itemId);
+
+    if (itemIndex === -1) {
+        return res.status(404).json({ message: 'Item not found' });
+    }
+
+    items[itemIndex] = { ...items[itemIndex], ...updatedItem };
+    res.json(items[itemIndex]);
+});
+
+// Delete an item endpoint
+app.delete('/items/:id', (req, res) => {
+    const itemId = parseInt(req.params.id);
+    const itemIndex = items.findIndex(item => item.id === itemId);
+
+    if (itemIndex === -1) {
+        return res.status(404).json({ message: 'Item not found' });
+    }
+
+    items.splice(itemIndex, 1);
+    res.status(204).send();
+});
+
 
 // Serve Swagger documentation
 const swaggerDocument = yaml.load('swagger.yaml');

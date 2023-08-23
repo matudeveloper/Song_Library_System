@@ -1,47 +1,32 @@
-
-
 openapi: 3.0.2
 info:
-  title: Todo
+  title: Todo API
   version: 1.0.0
+
 paths:
   /users:
-    summary: Path used to manage the list of users.
-    description: >-
-      The REST endpoint/path used to list and create zero or more `User` entities.  This path contains a
-      `GET` and `POST` operation to perform the list and create tasks, respectively.
     post:
+      summary: Create a User
+      tags:
+        - Users
       requestBody:
-        description: A new `User` to be created.
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        required: true
-      tags:
-        - /users
       responses:
         '201':
-          description: Successful response.
+          description: User successfully created.
         '400':
+          description: Bad Request.
           content:
-            text/html:
-              examples:
-                Email and password required:
-                  value: Email and password required
-          description: Bad Request
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
+          description: Conflict.
           content:
-<<<<<<< HEAD
-            text/html:
-              examples:
-                Email already exists:
-                  value: Email already exists
-          description: Conflict
-      operationId: createUser
-      summary: Create a User
-      description: Creates a new instance of a `User`.
-=======
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
@@ -71,20 +56,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /logout:
-    post:
-      summary: Logout a User
+    delete:
+      summary: Destroy a Session
       tags:
         - Sessions
       responses:
-        '200':
-          description: Successfully logged out.
+        '204':
+          description: Session successfully destroyed.
+        '401':
+          description: Unauthorized.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogoutResponse'
-        default:
-          description: Unexpected error.
+                $ref: '#/components/schemas/ErrorResponse'
 
   /items:
     get:
@@ -107,28 +91,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
->>>>>>> 1c35321 (As a user I can see my todo list [Delivers #185804917])
 components:
   schemas:
     User:
-      title: Root Type for User
-      description: ''
+      title: User
+      description: A user entity.
       type: object
       properties:
         email:
           type: string
+          format: email
         password:
           type: string
+          format: password
+      required:
+        - email
+        - password
       example:
         email: a@a.com
-<<<<<<< HEAD
-        password: secret
-tags:
-  -
-    name: /users
-    description: ''
-=======
-        password: $2b$10$iO3XiC.8OEK80ZTdROKjpe1D9qE3YO9mcT4vS6tmKBQCccZtT.4fS
+        password: 12345678
 
     Session:
       title: Session
@@ -171,14 +152,6 @@ tags:
         - code
         - message
 
-    LogoutResponse:
-      type: object
-      properties:
-        message:
-          type: string
-      example:
-        message: 'Logged out'
-
   securitySchemes:
     BearerAuth:
       type: http
@@ -194,4 +167,3 @@ tags:
     description: Session management endpoints.
   - name: Items
     description: Item management endpoints.
->>>>>>> 1c35321 (As a user I can see my todo list [Delivers #185804917])
