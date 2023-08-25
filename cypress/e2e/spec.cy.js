@@ -26,7 +26,7 @@ describe('Login Form Tests', () => {
     cy.get('[data-test-id="signup-password"]').type('testpassword123');
 
     // Here you can further test the submission by clicking the sign-up button
-    // cy.get('[data-test-id="signup-button"]').click();
+    cy.get('[data-test-id="signup-button"]').click();
     // And then assert whatever behavior you expect upon signup
   });
 
@@ -39,12 +39,8 @@ describe('Login Form Tests', () => {
     cy.get('[data-test-id="signin-password"]').type('testpassword123');
 
     // Here you can further test the submission by clicking the sign-in button
-    // cy.get('[data-test-id="signin-button"]').click();
+    cy.get('[data-test-id="signin-button"]').click();
     // And then assert whatever behavior you expect upon signin
-  });
-
-  beforeEach(() => {
-    cy.visit('http://localhost:3000');
   });
 
   it('should login the user successfully and set authentication cookie', () => {
