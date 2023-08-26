@@ -121,6 +121,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
 app.post('/logout', (req, res) => {
     res.clearCookie('authToken');
     res.json({ message: 'Logged out' });
