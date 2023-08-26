@@ -1,3 +1,5 @@
+
+
 openapi: 3.0.2
 info:
   title: Todo API
@@ -56,19 +58,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-    delete:
-      summary: Destroy a Session
+  /logout:
+    post:
+      summary: Logout a User
       tags:
         - Sessions
       responses:
-        '204':
-          description: Session successfully destroyed.
-        '401':
-          description: Unauthorized.
+        '200':
+          description: Successfully logged out.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/LogoutResponse'
+        default:
+          description: Unexpected error.
 
   /items:
     get:
@@ -109,7 +112,7 @@ components:
         - password
       example:
         email: a@a.com
-        password: 12345678
+        password: $2b$10$iO3XiC.8OEK80ZTdROKjpe1D9qE3YO9mcT4vS6tmKBQCccZtT.4fS
 
     Session:
       title: Session
@@ -151,6 +154,14 @@ components:
       required:
         - code
         - message
+
+    LogoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: 'Logged out'
 
   securitySchemes:
     BearerAuth:
