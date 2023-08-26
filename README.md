@@ -14,6 +14,7 @@ This is a web application for managing a list of Songs. Users can view a list of
 3. Run `npx prisma migrate dev --name initial` 
 4. Run `npm start` to start server
    
+
 ## Testing
 
 1. Run `npm test` in the root directory
