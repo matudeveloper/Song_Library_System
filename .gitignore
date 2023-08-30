@@ -4,3 +4,6 @@
 
 # Keep environment variables out of version control
 .env
+cert.pem
+csr.pem
+key.pem

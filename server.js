@@ -10,7 +10,14 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const LocalStorage = require('node-localstorage').LocalStorage;
 const cookieParser = require('cookie-parser');
+const https = require('https');
+const fs = require('fs');
 
+// Read the SSL certificate files
+const privateKey = fs.readFileSync('./key.pem', 'utf8');
+const certificate = fs.readFileSync('./cert.pem', 'utf8');
+
+const credentials = { key: privateKey, cert: certificate };
 
 // Initialize Express app
 const app = express();
@@ -25,6 +32,10 @@ app.use(cookieParser());
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
+
+// Create an HTTPS service
+const httpsServer = https.createServer(credentials, app);
+
 
 
 // Dashboard Route (protected)
@@ -63,7 +74,7 @@ app.post('/users', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword);
+
         const newUser = await prisma.user.create({
             data: {
                 email,
@@ -74,7 +85,7 @@ app.post('/users', async (req, res) => {
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         console.error('Error processing /users:', error);
-        res.status(500).json({ error: 'An error occurred' });
+        return res.status(500).json({ error: '500 An error occurred' });
     }
 });
 
@@ -181,6 +192,14 @@ const swaggerDocument = yaml.load('swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Start the server
+// Start the server on port 3000
+httpsServer.listen(3000, () => {
+    console.log(`Server is running on port http://localhost:${PORT}. Documentation at http://localhost:${PORT}/api-docs`);
+
+});
+/*
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}. Documentation at http://localhost:${PORT}/api-docs`);
 });
+
+ */

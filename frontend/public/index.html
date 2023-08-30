@@ -109,17 +109,20 @@
                                 window.location.href = '/dashboard';
                             }
                         }
-                    } else if (response.error) {
-                        if (response.error.includes('already exists')) {
+                    }
+                    if (response.error) {
+                        if (response.error.includes('User already exists')) {
                             alert('User already exists. Please use a different email.');
                         } else {
-                            alert(`${action} failed: ${response.data.error}`);
+                            //alert(`${action} failed: ${response.data.error}`);
                         }
                     }
-                    //}
 
                 } catch (error) {
-
+                    console.log(error)
+                    if (error.response && error.response.status === 500) {
+                        alert('User already exists. Please use a different email.');
+                    }
                     if ( error.config.data !== "undefined" ) {
 
                         let jsonData = JSON.parse(error.config.data);
@@ -131,6 +134,7 @@
                             alert('Password must be at least 8 characters long');
                         }
                     }
+                    console.log(response.status)
                     if (error.response && error.response.status === 409) {
                         alert('User already exists. Please use a different email.');
                     }
