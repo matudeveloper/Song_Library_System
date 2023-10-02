@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Detail</title>
+    <style>
+        /* Container for invoice data and the update form */
+        #invoiceData, .update-form {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin: 20px;
+            padding: 20px;
+            width: 70%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Headings */
+        h1, h3 {
+            color: #333;
+        }
+
+        /* The update form */
+        #updateForm {
+            margin-top: 20px;
+        }
+
+        /* Labels in the update form */
+        #updateForm label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        /* Input fields in the update form */
+        #updateForm input[type="text"],
+        #updateForm input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Checkbox in the update form */
+        #updateForm input[type="checkbox"] {
+            margin-top: 10px;
+        }
+
+        /* Update button in the update form */
+        #updateForm button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Hover state for the update button */
+        #updateForm button:hover {
+            background-color: #45a049;
+        }
+    </style>
+
+</head>
+<body>
+<div id="invoiceData">
+    <h1>Here is invoice details</h1>
+    <!-- Invoice details will be added here by JavaScript -->
+</div>
+<div class="update-form">
+    <h3>Update Invoice</h3>
+    <form id="updateForm">
+        <label for="SIHId">SIHId:</label>
+        <input type="text" id="SIHId" name="SIHId"><br>
+        <label for="DepartmentCode">Department Code:</label>
+        <input type="text" id="DepartmentCode" name="DepartmentCode"><br>
+        <label for="DepartmentName">Department Name:</label>
+        <input type="text" id="DepartmentName" name="DepartmentName"><br>
+        <label for="Dimension1Code">Dimension 1 Code:</label>
+        <input type="text" id="Dimension1Code" name="Dimension1Code"><br>
+        <label for="Dimension2Code">Dimension 2 Code:</label>
+        <input type="text" id="Dimension2Code" name="Dimension2Code"><br>
+        <label for="TotalAmount">Total Amount:</label>
+        <input type="number" id="TotalAmount" name="TotalAmount"><br>
+        <label for="ProfitAmount">Profit Amount:</label>
+        <input type="number" id="ProfitAmount" name="ProfitAmount"><br>
+        <label for="TotalSum">Total Sum:</label>
+        <input type="number" id="TotalSum" name="TotalSum"><br>
+        <label for="UserName">User Name:</label>
+        <input type="text" id="UserName" name="UserName"><br>
+        <label for="ReferenceNo">Reference No:</label>
+        <input type="text" id="ReferenceNo" name="ReferenceNo"><br>
+        <label for="PriceInclVat">Price Including VAT:</label>
+        <input type="checkbox" id="PriceInclVat" name="PriceInclVat"><br>
+        <label for="VatRegNo">VAT Registration No:</label>
+        <input type="text" id="VatRegNo" name="VatRegNo"><br>
+        <label for="PaidAmount">Paid Amount:</label>
+        <input type="number" id="PaidAmount" name="PaidAmount"><br>
+        <label for="EInvSent">Electronic Invoice Sent:</label>
+        <input type="checkbox" id="EInvSent" name="EInvSent"><br>
+        <button type="submit">Update Invoice</button>
+    </form>
+</div>
+
+<script>
+    window.onload = function () {
+        // The URL from where to fetch the invoice data
+        const url = 'https://localhost:3000/api/invoice/52c58d10-5889-4cf3-b0bb-d0595e7e83e2';
+
+        // Use the fetch API to get the data
+        fetch(url)
+            .then(response => response.json()) // Parse the JSON data from the response
+            .then(data => {
+                document.getElementById('SIHId').value = data.SIHId || '';
+                document.getElementById('DepartmentCode').value = data.DepartmentCode || '';
+                document.getElementById('DepartmentName').value = data.DepartmentName || '';
+                document.getElementById('Dimension1Code').value = data.Dimension1Code || '';
+                document.getElementById('Dimension2Code').value = data.Dimension2Code || '';
+                document.getElementById('TotalAmount').value = data.TotalAmount || 0;
+                document.getElementById('ProfitAmount').value = data.ProfitAmount || 0;
+                document.getElementById('TotalSum').value = data.TotalSum || 0;
+                document.getElementById('UserName').value = data.UserName || '';
+                document.getElementById('ReferenceNo').value = data.ReferenceNo || '';
+                document.getElementById('PriceInclVat').checked = data.PriceInclVat;
+                document.getElementById('VatRegNo').value = data.VatRegNo || '';
+                document.getElementById('PaidAmount').value = data.PaidAmount || 0;
+                document.getElementById('EInvSent').checked = data.EInvSent;
+
+            })
+            .catch(error => {
+                // Handle any errors that occur
+                console.error('Error fetching invoice data:', error);
+            });
+    };
+
+    // Handle the form submission to update the invoice
+    document.getElementById('updateForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Collecting all values
+        const SIHId = document.getElementById('SIHId').value;
+        const DepartmentCode = document.getElementById('DepartmentCode').value;
+        const DepartmentName = document.getElementById('DepartmentName').value;
+        const Dimension1Code = document.getElementById('Dimension1Code').value;
+        const Dimension2Code = document.getElementById('Dimension2Code').value;
+        const TotalAmount = document.getElementById('TotalAmount').value;
+        const ProfitAmount = document.getElementById('ProfitAmount').value;
+        const TotalSum = document.getElementById('TotalSum').value;
+        const UserName = document.getElementById('UserName').value;
+        const ReferenceNo = document.getElementById('ReferenceNo').value;
+        const PriceInclVat = document.getElementById('PriceInclVat').checked;
+        const VatRegNo = document.getElementById('VatRegNo').value;
+        const PaidAmount = document.getElementById('PaidAmount').value;
+        const EInvSent = document.getElementById('EInvSent').checked;
+
+
+        // Constructing the updateData object
+        const updateData = {
+            id: SIHId,
+            SIHId: SIHId,
+            TotalAmount: parseFloat(TotalAmount),
+            ProfitAmount: parseFloat(ProfitAmount),
+            TotalSum: parseFloat(TotalSum),
+            UserName: UserName,
+            ReferenceNo: ReferenceNo,
+            PriceInclVat: PriceInclVat,
+            PaidAmount: parseFloat(PaidAmount),
+            EInvSent: EInvSent,
+            EInvSentDate: new Date(),
+            EmailSent: new Date(),
+            //Paid: invoiceData.Paid
+
+        };
+
+        // Making the fetch request to update the invoice data
+        fetch('https://localhost:3000/update-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updateData)
+        })
+            .then(response => response.json())
+            .then(updatedInvoice => {
+                alert('Invoice updated successfully');
+                // Reload the page to reflect the updated invoice details
+                window.location.reload();
+            })
+            .catch(error => console.log(error));
+
+    });
+
+
+</script>
+</body>
+</html>
